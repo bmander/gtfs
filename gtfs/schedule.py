@@ -25,5 +25,9 @@ class Schedule:
   def stops(self):
     return self.session.query(Stop).all()
 
+  @property
+  def trips(self):
+    return self.session.query(Trip).all()
+
   def create_tables( self ):
     metadata.create_all(self.engine) 
