@@ -32,7 +32,7 @@ class Time(object):
 
     For example "01:02:03" returns 3723. The leading zero of the hours may be
     omitted. HH may be more than 23 if the time is on the following day."""
-    m = re.match(r'(\d{1,3}):([0-5]\d):([0-5]\d)$', time_string)
+    m = re.match(r'\s*(\d{1,3}):([0-5]\d):([0-5]\d)\s*$', time_string)
     # ignored: matching for leap seconds
     if not m:
       raise ValueError( 'Bad HH:MM:SS "%s"' % time_string )
