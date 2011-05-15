@@ -114,7 +114,27 @@ class ServicePeriod(Entity, Base):
 					   self.saturday,
 					   self.sunday)
 
+  def active_on_dow(self, weekday):
+    days = [self.monday, self.tuesday, self.wednesday,
+            self.thursday, self.friday, self.saturday,
+            self.sunday]
+    return days[weekday]
 
+  def active_on_date(self, service_date):
+    exception_add = ServiceException.query.with_parent(self).filter_by(date=service_date,
+                                                                       exception_type='1').count() > 0
+    
+    within_period = (self.start_date <= service_date and service_date <= self.end_date)
+    active_on_day = self.active_on_dow(service_date.weekday())
+    exception_remove = ServiceException.query.with_parent(self).filter_by(date=service_date,
+                                                                          exception_type='2').count() > 0
+    
+    if exception_add:
+      return True
+    elif within_period and active_on_day and not exception_remove:
+      return True
+    else:
+      return False
 
 class ServiceException(Entity, Base):
   __tablename__ = "calendar_dates"

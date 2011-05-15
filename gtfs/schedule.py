@@ -39,6 +39,13 @@ class Schedule:
   def trips(self):
     return self.session.query(Trip).all()
 
+  def service_for_date(self, service_date):
+    active_periods = []
+    for period in self.service_periods:
+      if period.active_on_date(service_date):
+        active_periods.append(period)
+    return active_periods
+
   def create_tables( self ):
     Base.metadata.create_all()
     self.session.commit()
