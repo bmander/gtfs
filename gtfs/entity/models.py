@@ -139,7 +139,7 @@ class ServicePeriod(Entity, Base):
 class ServiceException(Entity, Base):
   __tablename__ = "calendar_dates"
 
-  service_id = Column(String, ForeignKey("calendar.service_id"), primary_key=True) #fkey
+  service_id = Column(String, ForeignKey("calendar.service_id"), primary_key=True)
   date = Column(Date, primary_key=True)
   exception_type = Column(Integer)
 
@@ -155,7 +155,7 @@ class Route(Entity, Base):
   __tablename__ = "routes"
   
   route_id = Column(String, primary_key=True)
-  agency_id = Column(String, ForeignKey("agency.agency_id"))
+  agency_id = Column(String, ForeignKey("agency.agency_id"), index=True)
   route_short_name = Column(String)
   route_long_name = Column(String)
   route_desc = Column(String)
@@ -189,7 +189,9 @@ class Stop(Entity, Base):
   zone_id = Column(String)
   stop_url = Column(String)
   location_type = Column(Integer)
-  parent_station = Column(String) #this is a fkey
+  parent_station = Column(String, ForeignKey("stops.stop_id"), index=True)
+
+  parent = relationship("Stop", backref="child_stations", remote_side=[stop_id])
 
   inbound_conversions = {'stop_lat': float,
                          'stop_lon': float,
@@ -201,8 +203,8 @@ class Stop(Entity, Base):
 class Trip(Entity, Base):
   __tablename__ = "trips"
 
-  route_id = Column(String, ForeignKey("routes.route_id"))
-  service_id = Column(String, ForeignKey("calendar.service_id"))
+  route_id = Column(String, ForeignKey("routes.route_id"), index=True)
+  service_id = Column(String, ForeignKey("calendar.service_id"), index=True)
   trip_id = Column(String, primary_key=True)
   trip_headsign = Column(String)
   trip_short_name = Column(String)
@@ -223,10 +225,10 @@ class StopTime(Entity, Base):
   __tablename__ = "stop_times"
 
   id = Column(Integer, primary_key=True)
-  trip_id = Column(String, ForeignKey("trips.trip_id"))
+  trip_id = Column(String, ForeignKey("trips.trip_id"), index=True)
   arrival_time = Column(TransitTimeType)
   departure_time = Column(TransitTimeType)
-  stop_id = Column(String, ForeignKey("stops.stop_id"))
+  stop_id = Column(String, ForeignKey("stops.stop_id"), index=True)
   stop_sequence = Column(Integer)
   stop_headsign = Column(String)
   pickup_type = Column(Integer)
@@ -266,8 +268,8 @@ class FareRule(Entity, Base):
   __tablename__ = "fare_rules"
 
   id = Column(Integer, primary_key=True)
-  fare_id = Column(String, ForeignKey("fare_attributes.fare_id"))
-  route_id = Column(String, ForeignKey("routes.route_id"))
+  fare_id = Column(String, ForeignKey("fare_attributes.fare_id"), index=True)
+  route_id = Column(String, ForeignKey("routes.route_id"), index=True)
   origin_id = Column(String)
   destination_id = Column(String)
   contains_id = Column(String)
@@ -284,7 +286,7 @@ class Frequency(Entity, Base):
                          'headway_secs': int}
 
   id = Column(Integer, primary_key=True)
-  trip_id = Column(String, ForeignKey("trips.trip_id"))
+  trip_id = Column(String, ForeignKey("trips.trip_id"), index=True)
   start_time = Column(TransitTimeType)
   end_time = Column(TransitTimeType)
   headway_secs = Column(Integer)
@@ -300,8 +302,8 @@ class Transfer(Entity, Base):
   inbound_conversions = {'transfer_type': int}
 
   id = Column(Integer, primary_key=True)
-  from_stop_id = Column(String, ForeignKey("stops.stop_id"))
-  to_stop_id = Column(String, ForeignKey("stops.stop_id"))
+  from_stop_id = Column(String, ForeignKey("stops.stop_id"), index=True)
+  to_stop_id = Column(String, ForeignKey("stops.stop_id"), index=True)
   transfer_type = Column(Integer)
   min_transfer_time = Column(String)
 
