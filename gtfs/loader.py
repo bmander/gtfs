@@ -26,7 +26,7 @@ def load(feed_filename, db_filename=":memory:"):
     print "loading %s"%gtfs_class
    
     try:
-      for i, record in enumerate( fd.get_table( gtfs_class.TABLENAME+".txt" ) ):
+      for i, record in enumerate( fd.get_table( gtfs_class.__tablename__+".txt" ) ):
         if i%500==0:
 	  sys.stdout.write(".")
 	  sys.stdout.flush()

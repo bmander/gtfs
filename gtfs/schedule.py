@@ -1,12 +1,22 @@
 import sqlalchemy
+from sqlalchemy.orm import scoped_session, sessionmaker
+
+
 from entity import *
 
 class Schedule:
   def __init__( self, db_filename ):
     self.db_filename = db_filename
 
-    self.engine = sqlalchemy.create_engine('sqlite:///%s'%self.db_filename, echo=False)
-    Session = sqlalchemy.orm.sessionmaker(bind=self.engine)
+    self.engine = sqlalchemy.create_engine('sqlite:///%s' % self.db_filename, echo=False)
+
+    Base.metadata.bind = self.engine
+
+    Base.metadata.autoflush = False
+    Base.metadata.autocommit = False
+
+    Session = scoped_session(sessionmaker())
+    Base.query = Session.query_property()
     self.session = Session()
 
   @property
@@ -30,4 +40,5 @@ class Schedule:
     return self.session.query(Trip).all()
 
   def create_tables( self ):
-    metadata.create_all(self.engine) 
+    Base.metadata.create_all()
+    self.session.commit()

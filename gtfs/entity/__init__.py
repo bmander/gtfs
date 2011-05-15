@@ -1,7 +1,2 @@
-import map_entities
-import sqlalchemy
-
-from unmapped_entities import *
-
-metadata = sqlalchemy.MetaData()
-map_entities.create_and_map_tables(metadata)
+from models import Base, ShapePoint, Agency, ServicePeriod, ServiceException
+from models import Route, Stop, Trip, StopTime, Fare, FareRule, Frequency, Transfer
