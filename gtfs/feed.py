@@ -1,44 +1,7 @@
 import os
-from codecs import iterdecode
+import errno
 from zipfile import ZipFile
-import csv
-
-class Record(object):
-  """A Record is a single row in a CSV file"""
-
-  def __init__(self,header,row):
-    self.header = header
-    self.row = row 
-
-  def to_dict(self):
-    return dict([(fieldname,self.row[fieldindex] if fieldindex<len(self.row) else None) for fieldname,fieldindex in self.header.items()])
-
-  def __repr__(self):
-    return repr(self.to_dict())
-
-  def __getitem__(self,name):
-    try:
-      return self.row[ self.header[name] ]
-    except KeyError:
-      return None
-
-class Table(object):
-  """A Table is a single CSV file"""
-
-  def __init__(self, header, rows):
-
-    # header is a dict of name->index
-    self.header = dict( zip( header, range(len(header)) ) ) 
-    self.rows = rows
-
-  def __repr__(self):
-    return "<Table %s>"%self.header
-
-  def __iter__(self):
-    return self
-
-  def next(self):
-    return Record( self.header, self.rows.next() )
+from csv import DictReader
 
 class Feed(object):
   """A Feed is a collection of CSV files with headers, either zipped into an archive
@@ -48,19 +11,26 @@ class Feed(object):
     self.filename = filename 
     self.zf = None
 
-    if not os.path.isdir( filename ):
-      self.zf = ZipFile( filename )
+    if not os.path.isdir(filename):
+      self.zf = ZipFile(filename)
 
-  def get_rows(self, filename):
+  def get_reader(self, filename):
     if self.zf:
       try:
-        contents = self.zf.read(filename)
+        f = self.zf.open(filename)
       except KeyError:
-        raise KeyError( "%s is not present feed"%filename )
-      return csv.reader( iterdecode( contents.split("\n"), "utf-8" ) )
+        raise FileNotFoundError("%s not found" % filename)
     else:
-      return csv.reader( iterdecode( open( os.path.join( self.filename, filename ) ), "utf-8" ) )
+      try:
+        f = open(os.path.join(self.filename, filename))
+      except IOError, e:
+        if e.errno==errno.ENOENT:
+          raise FileNotFoundError("%s not found" % filename)
+        else:
+          raise
+        
+    dr = DictReader(f)
+    return dr
 
-  def get_table(self, filename):
-    rows = self.get_rows( filename )
-    return Table( rows.next(), rows )
+class FileNotFoundError(Exception):
+  pass
