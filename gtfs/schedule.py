@@ -5,15 +5,12 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from entity import *
 
 class Schedule:
-  def __init__( self, db_filename ):
+  def __init__(self, db_filename, echo=False):
     self.db_filename = db_filename
 
-    self.engine = sqlalchemy.create_engine('sqlite:///%s' % self.db_filename, echo=False)
+    self.engine = sqlalchemy.create_engine('sqlite:///%s' % self.db_filename, echo=echo)
 
     Base.metadata.bind = self.engine
-
-    Base.metadata.autoflush = False
-    Base.metadata.autocommit = False
 
     Session = scoped_session(sessionmaker())
     Base.query = Session.query_property()
