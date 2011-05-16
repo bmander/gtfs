@@ -32,16 +32,16 @@ class TransitTimeType(sqlalchemy.types.TypeDecorator):
     return value.val if value else None
 
   def process_result_value( self, value, dialect ):
-    return types.Time( value ) if value else None
+    return TransitTime( value ) #if value else None
 
 Base = declarative_base()
 
 class Entity():
   def __init__(self, **kwargs):
     for k, v in kwargs.items():
-      if v == '':
+      if v == '' or v is None:
         v = None
-      if hasattr(self, 'inbound_conversions') and k in self.inbound_conversions:
+      elif hasattr(self, 'inbound_conversions') and k in self.inbound_conversions:
         v = self.inbound_conversions[k](v)
       setattr(self, k, v)
 
