@@ -172,8 +172,8 @@ class Route(Entity, Base):
 
     route_id = Column(String, primary_key=True, nullable=False)
     agency_id = Column(String, ForeignKey("agency.agency_id"), index=True)
-    route_short_name = Column(String, nullable=False)
-    route_long_name = Column(String, nullable=False)
+    route_short_name = Column(String)
+    route_long_name = Column(String)
     route_desc = Column(String)
     route_type = Column(Integer, nullable=False)
     route_url = Column(String)
