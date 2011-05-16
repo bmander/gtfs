@@ -52,10 +52,10 @@ class ShapePoint(Entity, Base):
                          'shape_pt_lon': float}
 
   id = Column(Integer, primary_key=True)
-  shape_id = Column(String)
-  shape_pt_lat = Column(Float)
-  shape_pt_lon = Column(Float)
-  shape_pt_sequence = Column(Integer)
+  shape_id = Column(String, nullable=False)
+  shape_pt_lat = Column(Float, nullable=False)
+  shape_pt_lon = Column(Float, nullable=False)
+  shape_pt_sequence = Column(Integer, nullable=False)
   shape_dist_traveled = Column(String)
 
   def __repr__(self):
@@ -65,9 +65,9 @@ class Agency(Entity, Base):
   __tablename__ = "agency"
 
   agency_id = Column(String, primary_key=True)
-  agency_name = Column(String)
-  agency_url = Column(String)
-  agency_timezone = Column(String)
+  agency_name = Column(String, nullable=False)
+  agency_url = Column(String, nullable=False)
+  agency_timezone = Column(String, nullable=False)
   agency_lang = Column(String(2))
   agency_phone = Column(String)
 
@@ -83,16 +83,16 @@ class Agency(Entity, Base):
 class ServicePeriod(Entity, Base):
   __tablename__ = "calendar"
 
-  service_id = Column(String, primary_key=True)
-  monday = Column(Boolean)
-  tuesday  = Column(Boolean)
-  wednesday = Column(Boolean)
-  thursday = Column(Boolean)
-  friday = Column(Boolean)
-  saturday = Column(Boolean)
-  sunday = Column(Boolean)
-  start_date = Column(Date)
-  end_date = Column(Date)
+  service_id = Column(String, primary_key=True, nullable=False)
+  monday = Column(Boolean, nullable=False)
+  tuesday  = Column(Boolean, nullable=False)
+  wednesday = Column(Boolean, nullable=False)
+  thursday = Column(Boolean, nullable=False)
+  friday = Column(Boolean, nullable=False)
+  saturday = Column(Boolean, nullable=False)
+  sunday = Column(Boolean, nullable=False)
+  start_date = Column(Date, nullable=False)
+  end_date = Column(Date, nullable=False)
 
   inbound_conversions = {'monday': make_boolean,
                          'tuesday': make_boolean,
@@ -139,9 +139,9 @@ class ServicePeriod(Entity, Base):
 class ServiceException(Entity, Base):
   __tablename__ = "calendar_dates"
 
-  service_id = Column(String, ForeignKey("calendar.service_id"), primary_key=True)
-  date = Column(Date, primary_key=True)
-  exception_type = Column(Integer)
+  service_id = Column(String, ForeignKey("calendar.service_id"), primary_key=True, nullable=False)
+  date = Column(Date, primary_key=True, nullable=False)
+  exception_type = Column(Integer, nullable=False)
 
   service_period = relationship(ServicePeriod, backref="exceptions")
 
@@ -154,12 +154,12 @@ class ServiceException(Entity, Base):
 class Route(Entity, Base):
   __tablename__ = "routes"
   
-  route_id = Column(String, primary_key=True)
+  route_id = Column(String, primary_key=True, nullable=False)
   agency_id = Column(String, ForeignKey("agency.agency_id"), index=True)
-  route_short_name = Column(String)
-  route_long_name = Column(String)
+  route_short_name = Column(String, nullable=False)
+  route_long_name = Column(String, nullable=False)
   route_desc = Column(String)
-  route_type = Column(Integer)
+  route_type = Column(Integer, nullable=False)
   route_url = Column(String)
   route_color = Column(String(6))
   route_text_color = Column(String(6))
@@ -180,12 +180,12 @@ class Route(Entity, Base):
 class Stop(Entity, Base):
   __tablename__ = "stops"
 
-  stop_id = Column(String, primary_key=True)
+  stop_id = Column(String, primary_key=True, nullable=False)
   stop_code = Column(String)
-  stop_name = Column(String)
+  stop_name = Column(String, nullable=False)
   stop_desc = Column(String)
-  stop_lat = Column(Float)
-  stop_lon = Column(Float)
+  stop_lat = Column(Float, nullable=False)
+  stop_lon = Column(Float, nullable=False)
   zone_id = Column(String)
   stop_url = Column(String)
   location_type = Column(Integer)
@@ -203,9 +203,9 @@ class Stop(Entity, Base):
 class Trip(Entity, Base):
   __tablename__ = "trips"
 
-  route_id = Column(String, ForeignKey("routes.route_id"), index=True)
-  service_id = Column(String, ForeignKey("calendar.service_id"), index=True)
-  trip_id = Column(String, primary_key=True)
+  route_id = Column(String, ForeignKey("routes.route_id"), index=True, nullable=False)
+  service_id = Column(String, ForeignKey("calendar.service_id"), index=True, nullable=False)
+  trip_id = Column(String, primary_key=True, nullable=False)
   trip_headsign = Column(String)
   trip_short_name = Column(String)
   direction_id = Column(Integer)
@@ -225,11 +225,11 @@ class StopTime(Entity, Base):
   __tablename__ = "stop_times"
 
   id = Column(Integer, primary_key=True)
-  trip_id = Column(String, ForeignKey("trips.trip_id"), index=True)
-  arrival_time = Column(TransitTimeType)
-  departure_time = Column(TransitTimeType)
-  stop_id = Column(String, ForeignKey("stops.stop_id"), index=True)
-  stop_sequence = Column(Integer)
+  trip_id = Column(String, ForeignKey("trips.trip_id"), index=True, nullable=False)
+  arrival_time = Column(TransitTimeType, nullable=False)
+  departure_time = Column(TransitTimeType, nullable=False)
+  stop_id = Column(String, ForeignKey("stops.stop_id"), index=True, nullable=False)
+  stop_sequence = Column(Integer, nullable=False)
   stop_headsign = Column(String)
   pickup_type = Column(Integer)
   drop_off_type = Column(Integer)
@@ -250,11 +250,11 @@ class StopTime(Entity, Base):
 class Fare(Entity, Base):
   __tablename__ = "fare_attributes"
 
-  fare_id = Column(String, primary_key=True)
-  price = Column(String)
-  currency_type = Column(String(3))
-  payment_method = Column(Integer)
-  transfers = Column(Integer)
+  fare_id = Column(String, primary_key=True, nullable=False)
+  price = Column(String, nullable=False)
+  currency_type = Column(String(3), nullable=False)
+  payment_method = Column(Integer, nullable=False)
+  transfers = Column(Integer, nullable=False)
   transfer_duration = Column(Integer)
   
   inbound_conversions = {'payment_method': int,
@@ -268,7 +268,7 @@ class FareRule(Entity, Base):
   __tablename__ = "fare_rules"
 
   id = Column(Integer, primary_key=True)
-  fare_id = Column(String, ForeignKey("fare_attributes.fare_id"), index=True)
+  fare_id = Column(String, ForeignKey("fare_attributes.fare_id"), index=True, nullable=False)
   route_id = Column(String, ForeignKey("routes.route_id"), index=True)
   origin_id = Column(String)
   destination_id = Column(String)
@@ -286,10 +286,10 @@ class Frequency(Entity, Base):
                          'headway_secs': int}
 
   id = Column(Integer, primary_key=True)
-  trip_id = Column(String, ForeignKey("trips.trip_id"), index=True)
-  start_time = Column(TransitTimeType)
-  end_time = Column(TransitTimeType)
-  headway_secs = Column(Integer)
+  trip_id = Column(String, ForeignKey("trips.trip_id"), index=True, nullable=False)
+  start_time = Column(TransitTimeType, nullable=False)
+  end_time = Column(TransitTimeType, nullable=False)
+  headway_secs = Column(Integer, nullable=False)
   
   trip = relationship(Trip,backref="frequencies")
 
@@ -302,9 +302,9 @@ class Transfer(Entity, Base):
   inbound_conversions = {'transfer_type': int}
 
   id = Column(Integer, primary_key=True)
-  from_stop_id = Column(String, ForeignKey("stops.stop_id"), index=True)
-  to_stop_id = Column(String, ForeignKey("stops.stop_id"), index=True)
-  transfer_type = Column(Integer)
+  from_stop_id = Column(String, ForeignKey("stops.stop_id"), index=True, nullable=False)
+  to_stop_id = Column(String, ForeignKey("stops.stop_id"), index=True, nullable=False)
+  transfer_type = Column(Integer, nullable=False)
   min_transfer_time = Column(String)
 
   from_stop = relationship(Stop,
