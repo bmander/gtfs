@@ -242,6 +242,11 @@ class Trip(Entity, Base):
     def __repr__(self):
         return "<Trip %s>" % self.trip_id
 
+    @property
+    def uses_frequency(self):
+        #TODO: optimize
+        return len(self.frequencies) > 0
+
 
 class StopTime(Entity, Base):
     __tablename__ = "stop_times"
@@ -270,6 +275,11 @@ class StopTime(Entity, Base):
 
     def __repr__(self):
         return "<StopTime %s %s>" % (self.trip_id, self.departure_time)
+
+    @property
+    def elapsed_time(self):
+        #TODO: optimize
+        return self.arrival_time.val - self.trip.stop_times[0].arrival_time.val
 
 
 class Fare(Entity, Base):
@@ -324,6 +334,17 @@ class Frequency(Entity, Base):
     def __repr__(self):
         return "<Frequency %s-%s %s>" % (self.start_time, self.end_time,
                                          self.headway_secs)
+
+    @property
+    def trip_times(self):
+        out = []
+        start_time = self.start_time.val
+        end_time = self.end_time.val
+        time = start_time
+        while time < end_time:
+            out.append(time)
+            time += self.headway_secs
+        return out
 
 
 class Transfer(Entity, Base):
