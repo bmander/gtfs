@@ -244,8 +244,8 @@ class Trip(Entity, Base):
 
     @property
     def uses_frequency(self):
-        #TODO: optimize
-        return len(self.frequencies) > 0
+        #would be even better to use EXISTS here since the actual count is irrelevant
+        return Frequency.query.with_parent(self).count() > 0
 
 
 class StopTime(Entity, Base):
@@ -278,8 +278,11 @@ class StopTime(Entity, Base):
 
     @property
     def elapsed_time(self):
-        #TODO: optimize
-        return self.arrival_time.val - self.trip.stop_times[0].arrival_time.val
+        q = StopTime.query
+        q = q.with_parent(self.trip)
+        q = q.order_by(StopTime.stop_sequence.asc())
+        st = q.value(StopTime.arrival_time)
+        return self.arrival_time.val - st.val
 
 
 class Fare(Entity, Base):
