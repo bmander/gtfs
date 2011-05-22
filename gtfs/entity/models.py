@@ -279,7 +279,7 @@ class Fare(Entity, Base):
     price = Column(String, nullable=False)
     currency_type = Column(String(3), nullable=False)
     payment_method = Column(Integer, nullable=False)
-    transfers = Column(Integer, nullable=False)
+    transfers = Column(Integer)
     transfer_duration = Column(Integer)
 
     inbound_conversions = {'payment_method': int,
