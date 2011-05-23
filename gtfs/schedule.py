@@ -38,10 +38,15 @@ class Schedule:
         return self.session.query(Trip).all()
 
     def service_for_date(self, service_date):
-        active_periods = []
+        q = self.session.query(ServiceException.service_id)
+        q = q.filter_by(date=service_date, exception_type='1')
+
+        active_periods = [r[0] for r in q.all()]
+
         for period in self.service_periods:
             if period.active_on_date(service_date):
-                active_periods.append(period)
+                active_periods.append(period.service_id)
+
         return active_periods
 
     def create_tables(self):
