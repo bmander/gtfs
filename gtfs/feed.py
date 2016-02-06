@@ -1,7 +1,7 @@
 import os
 import errno
 from zipfile import ZipFile
-from csv import DictReader
+from util import TolerantDictReader
 
 
 class Feed(object):
@@ -30,7 +30,7 @@ class Feed(object):
                 else:
                     raise
 
-        dr = DictReader(f)
+        dr = TolerantDictReader(f)
         return dr
 
 
