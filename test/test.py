@@ -1,9 +1,26 @@
 from gtfs.loader import load
 from gtfs.schedule import Schedule
 from gtfs.types import TransitTime
+from gtfs.feed import Feed
 import os
 
 import unittest
+
+class TestDictReader(unittest.TestCase):
+  def test_basic(self):
+    curpath = os.path.dirname(os.path.realpath(__file__))
+    feedpath = os.path.join(curpath,"data/sample-feed.zip")
+
+    fd = Feed(feedpath)
+    rd = fd.get_reader( "stops.txt" )
+
+    self.assertEqual( rd.next(), 
+      {u'stop_lat': u'37.728631', u'stop_lon': 
+      u'-122.431282', u'stop_url': u'', u'stop_id': 
+      u'S1', u'stop_desc': 
+      u'The stop is located at the southwest corner of the intersection.', 
+      u'stop_name': u'Mission St. & \u9280 Ave.', u'location_type': u''})
+
 
 class TestSchedule(unittest.TestCase):
   def setUp(self):
