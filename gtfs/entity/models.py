@@ -24,6 +24,8 @@ def make_date(value):
 
 
 def make_time(value):
+    if value.strip()=="":
+        return None
     return TransitTime(value)
 
 
@@ -34,6 +36,10 @@ class TransitTimeType(sqlalchemy.types.TypeDecorator):
         return value.val if value else None
 
     def process_result_value(self, value, dialect):
+        if type(value)==str and value.strip()=="":
+            return None
+        if value is None:
+            return None
         return TransitTime(value)  # if value else None
 
 
@@ -248,8 +254,8 @@ class StopTime(Entity, Base):
     id = Column(Integer, primary_key=True)
     trip_id = Column(String, ForeignKey("trips.trip_id"),
                      index=True, nullable=False)
-    arrival_time = Column(TransitTimeType, nullable=False)
-    departure_time = Column(TransitTimeType, nullable=False)
+    arrival_time = Column(TransitTimeType, nullable=True)
+    departure_time = Column(TransitTimeType, nullable=True)
     stop_id = Column(String, ForeignKey("stops.stop_id"),
                      index=True, nullable=False)
     stop_sequence = Column(Integer, nullable=False)
