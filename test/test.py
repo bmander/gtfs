@@ -1,5 +1,6 @@
 from gtfs.loader import load
 from gtfs.schedule import Schedule
+from gtfs.types import TransitTime
 import os
 
 import unittest
@@ -29,9 +30,13 @@ class TestSchedule(unittest.TestCase):
       [u'AWE1', u'AWD1'] )
 
   def test_trip_stop_times( self ):
-    self.assertEqual( [(st.arrival_time.val if st.arrival_time else None,
-                        st.departure_time.val if st.departure_time else None) for st in self.schedule.routes[0].trips[0].stop_times],
-                      [(370, 370), (None, None), (380, 390), (None, None), (405, 405)] )
+    self.assertEqual( [(st.arrival_time,
+                        st.departure_time) for st in self.schedule.routes[0].trips[0].stop_times],
+                      [(TransitTime(370), TransitTime(370)), 
+                      (None, None), 
+                      (TransitTime(380), TransitTime(390)), 
+                      (None, None), 
+                      (TransitTime(405), TransitTime(405))] )
 
   def test_service_period_trips( self ):
     self.assertEqual( [tr.trip_id for tr in self.schedule.service_periods[0].trips],
