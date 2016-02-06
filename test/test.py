@@ -1,12 +1,15 @@
 from gtfs.loader import load
 from gtfs.schedule import Schedule
-from gtfs.types import Boolean
+import os
 
 import unittest
 
 class TestSchedule(unittest.TestCase):
   def setUp(self):
-    self.schedule = load( "test/data/sample-feed.zip" )
+    curpath = os.path.dirname(os.path.realpath(__file__))
+    feedpath = os.path.join(curpath,"data/sample-feed.zip")
+
+    self.schedule = load( feedpath )
 
   def test_routes( self ):
     self.assertEqual( self.schedule.routes[0].route_id, "A" )
@@ -15,7 +18,7 @@ class TestSchedule(unittest.TestCase):
     self.assertEqual( [sp.service_id for sp in self.schedule.service_periods],
                       ["WE","WD"] )
     self.assertEqual( type( self.schedule.service_periods[0].monday ),
-                      Boolean )
+                      bool )
 
   def test_stops( self ):
     self.assertEqual( [st.stop_id for st in self.schedule.stops],
